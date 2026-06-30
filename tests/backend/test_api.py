@@ -17,8 +17,13 @@ def restore_activity_state():
 
 
 def test_get_activities_returns_activity_data():
+    # Arrange
+    # No setup required beyond the existing in-memory activities.
+
+    # Act
     response = client.get("/activities")
 
+    # Assert
     assert response.status_code == 200
     payload = response.json()
     assert "Chess Club" in payload
@@ -26,21 +31,27 @@ def test_get_activities_returns_activity_data():
 
 
 def test_signup_for_activity_adds_participant():
-    response = client.post(
-        "/activities/Chess%20Club/signup?email=newstudent@mergington.edu"
-    )
+    # Arrange
+    email = "newstudent@mergington.edu"
 
+    # Act
+    response = client.post(f"/activities/Chess%20Club/signup?email={email}")
+
+    # Assert
     assert response.status_code == 200
     assert response.json()["message"] == (
-        "Signed up newstudent@mergington.edu for Chess Club"
+        f"Signed up {email} for Chess Club"
     )
-    assert "newstudent@mergington.edu" in app_module.activities["Chess Club"]["participants"]
+    assert email in app_module.activities["Chess Club"]["participants"]
 
 
 def test_signup_for_existing_participant_returns_400():
-    response = client.post(
-        "/activities/Chess%20Club/signup?email=michael@mergington.edu"
-    )
+    # Arrange
+    email = "michael@mergington.edu"
 
+    # Act
+    response = client.post(f"/activities/Chess%20Club/signup?email={email}")
+
+    # Assert
     assert response.status_code == 400
     assert response.json()["detail"] == "Student is already signed up for this activity"
